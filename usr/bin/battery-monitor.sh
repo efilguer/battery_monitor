@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #Find the first avail battery path matching power supply class
 if [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
     export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
