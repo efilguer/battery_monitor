@@ -1,0 +1,10 @@
+Package: battery-monitor
+Version: 1.0.0
+Section: utils
+Priority: optional
+Architecture: all
+Depends: bash, libnotify-bin
+Maintainer: locutus <local@localhost>
+Description: Script that calculates battery health, monitors battery levels while charged, and alerts user via
+    desktop notification that battery has reached optimum and that user needs to unplug the charging cable.
+    

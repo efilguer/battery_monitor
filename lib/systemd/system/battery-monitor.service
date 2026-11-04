@@ -1,0 +1,15 @@
+[Unit]
+Description=Hardware battery capacity and optimum health monitor
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/battery-monitor
+User=nobody
+Group=nogroup
+
+#sandboxing
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+NoNewPrivileges=true

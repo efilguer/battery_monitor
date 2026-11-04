@@ -1,0 +1,9 @@
+[Unit]
+Description=Trigger battery health monitor every 30 seconds while charging
+
+[Timer]
+OneUnitActiveSec=30s
+Unit=battery-check.service
+
+[Install]
+WantedBy=timers.target
