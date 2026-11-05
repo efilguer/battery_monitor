@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -e
+
+
+if [ -d /run/systemd/system ]; then
+    systemctl --system daemon-reload > /dev/null || true
+fi 
+
+if [ -x /user/bin/udevadm ]; then
+    udevadm control --reload-rules || true
+    udevadm trigger --subsystem-match=power_supply || true
+fi
+
+exit 0

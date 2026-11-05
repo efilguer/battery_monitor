@@ -1,0 +1,1 @@
+SUBSYSTEM=="power_supply", ACTION=="change", RUN+="/bin/systemctl start battery-monitor.service"

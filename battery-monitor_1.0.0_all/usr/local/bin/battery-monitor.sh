@@ -69,15 +69,9 @@ for path in "${battery_paths[@]}"; do
 
     battery_optimums+=("$optimum")
 
-    if [[ $status == "Charging" ]]; then
-        #compare here
-        if (( capacity >= optimum )); then
+    if (( capacity >= optimum )); then
             #set desktop alert
             notify-send -u critical "Battery level is past or at optimum. Unplug now"
-        fi
-    else
-        exit 0
-
     fi
     
 done
