@@ -1,0 +1,65 @@
+---
+- name: Build, Deploy, and Monitor Battery Hardware Events
+  hosts: my_nodes
+  become: true
+  vars:
+    local_staging_dir: "{{ playbook_dir }}/package-staging"
+    local_deb_output: "{{ playbook_dir }}/battery-monitor_1.0.0_all.deb"
+    remote_deb_path: "/tmp/battery-monitor_1.0.0_all.deb"
+    
+  tasks:
+    # STEP 1: Build the package locally
+    - name: Build the .deb package locally
+      delegate_to: localhost
+      become: false
+      ansible.builtin.command:
+        cmd: "dpkg-deb --build {{ local_staging_dir }} {{ local_deb_output }}"
+      changed_when: true
+
+    # STEP 2: Transfer package to the laptops
+    - name: Copy the .deb package to target servers
+      ansible.builtin.copy:
+        src: "{{ local_deb_output }}"
+        dest: "{{ remote_deb_path }}"
+        mode: '0644'
+
+    # STEP 3: Install Prometheus Node Exporter for Grafana tracking
+    #- name: Install Prometheus Node Exporter via apt
+      #ansible.builtin.apt:
+        #name: prometheus-node-exporter
+        #state: present
+
+    #- name: Configure Node Exporter textfile directory
+      #ansible.builtin.lineinfile:
+        #path: /etc/default/prometheus-node-exporter
+        #regex: '^ARGS='
+        #line: 'ARGS="--collector.textfile.directory=/var/lib/node_exporter/textfile_collector"'
+      #notify: Restart Node Exporter
+
+    # STEP 4: Install the custom .deb package
+    - name: Install the battery monitor .deb package using apt
+      ansible.builtin.apt:
+        deb: "{{ remote_deb_path }}"
+        state: present
+
+    # STEP 5: Force systemd and udev to recognize the new configuration files
+    - name: Force systemd to reload configs
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
+    - name: Trigger udev to reload the new rules immediately
+      ansible.builtin.command:
+        cmd: "udevadm control --reload-rules && udevadm trigger"
+      changed_when: true
+
+    # STEP 6: Clean up the installer file
+    - name: Clean up temporary .deb file on targets
+      ansible.builtin.file:
+        path: "{{ remote_deb_path }}"
+        state: absent
+
+  handlers:
+    - name: Restart Node Exporter
+      ansible.builtin.systemd_service:
+        name: prometheus-node-exporter
+        state: restarted

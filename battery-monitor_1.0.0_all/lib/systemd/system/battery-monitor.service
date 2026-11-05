@@ -4,9 +4,8 @@ PartOf=graphical-session.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/battery-monitor
-User=nobody
-Group=nogroup
+ExecStart=/usr/local/bin/battery-monitor
+DynamicUser=yes
 
 #sandboxing
 ProtectSystem=strict
